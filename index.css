@@ -1,0 +1,108 @@
+*{
+    margin:0;
+    padding:0;
+}
+.title {
+    width: 100%;
+    line-height: 60px;
+    text-align: center;
+}
+.starts {
+    height:60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+.starts ul{
+    float:left;
+}
+.starts ul li{
+    list-style: none;
+    width:32px;
+    height:21px;
+    float:left;
+    background:url(images/starky.png) no-repeat;
+
+}
+.starts ul li.on{
+    background:url(images/starsy.png) no-repeat;
+}
+.starts ul span{
+    display:inline;
+    float:left;
+    padding-left:10px;
+    height:21px;
+    line-height:21px;
+}
+.sildbar {
+    line-height: 50px;
+    font-size:18px;
+    text-indent: 20px;
+    display: none;
+}
+
+/*内容区域*/
+#container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap:wrap;
+}
+.list{
+    float:left;
+    width:44%;
+    height:30px;
+    line-height: 30px;
+    text-align: center;
+    background: #FCFCFC;
+    margin: 5px 1% 5px 2%;
+    border-radius: 5px;
+}
+.list.selectOn{
+    background: #FCFCE4;
+    color: #CD073C;
+}
+
+/*输入区域*/
+#otherInFo{
+    height: 80px;
+    width:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#textarea {
+    outline: none;
+    -webkit-appearance: none;
+    width: 80%;
+    height:30px;
+    font-size: 16px;
+    background: #E7E7E7;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #E7E7E7;
+}
+
+/*提交按钮*/
+#submit {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#button {
+    text-decoration:none;
+    background: #409EFF;
+    color:#f2f2f2;
+    padding: 10px 30px 10px 30px;
+    font-size:16px;
+    font-family: 微软雅黑,宋体,Arial,Helvetica,Verdana,sans-serif;
+    font-weight:bold;
+    border-radius:3px;
+    -webkit-transition:all linear 0.30s;
+    -moz-transition:all linear 0.30s;
+    transition:all linear 0.30s;
+}

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <title>试驾服务评价</title>
+    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./alert.css">
+    <script src="./jquery-3.1.1.js"></script>
+    <script src="./alert.js"></script>
+</head>
+<body>
+<div class="selection">
+    <div class="title"><h2>试驾服务评价</h2></div>
+    <div class="starts">
+        <ul id = "pingStar">
+            <li rel="1"></li>
+            <li rel="2"></li>
+            <li rel="3"></li>
+            <li rel="4"></li>
+            <li rel="5"></li>
+        </ul>
+        <input type="hidden" value="" id = "startP"/>
+    </div>
+    <div class="sildbar">本次试驾服务给您留下了什么印象呢？</div>
+    <div id="container"></div>
+    <div class="sildbar" style="display: block;margin-top:40px;">您还有什么建议，也一并告诉我们吧</div>
+    <!-- 输入框区域 -->
+    <div id="otherInFo">
+        <textarea rows="4" id="textarea" placeholder="还有其他什么想说的？"></textarea>
+    </div>
+    <!-- 提交按钮区域 -->
+    <div id="submit">
+        <a href="javascript:;" id="button">提&nbsp;&nbsp;交</a>
+    </div>
+</div>
+</body>
+</html>
+<script>
+$(function () {
+    // 提取url 的全局方法
+    (function ($) {
+        $.getUrlParam = function (name) {
+            let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            let r = location.search.substr(1).match(reg);
+            if (r != null) return decodeURIComponent(r[2]); return null;
+        }
+    })($)
+
+    // 获取展示标签信息
+    let arr = null;
+    (function () {
+        $.ajax({
+            type: 'get',
+            url: 'http://dev.scirichon.com/weixin/template',
+            success: function (results) {
+                arr = results.data
+            }
+        })
+    })()
+
+    // 评分开始
+    let s = $('#pingStar')
+    let n = s.children('li')
+    let input = $('#startP')
+    let optionsList = []
+    let clearAll = function () {
+        $.each(n, (index, item) => {
+            item.className = ''
+            optionsList = []
+    })
+    }
+    $.each(n, (index, item) => {
+        $(item).on('touchstart', function () {
+            let q = $(this).attr("rel")
+            clearAll()
+            input[0].value = q;
+            $('.sildbar').css({display:'block'})
+            selectChange()
+            for(let i = 0;i < q; i++){
+                n[i].className = "on";
+            }
+        })
+    })
+
+    // 根据分数展示不同的字段
+    let selectChange = function () {
+        let input = $('#startP')
+        let str= ``
+        if (+input.val() <= 4) {
+            $.each(arr, (index, item) =>{
+                if (item.type === 'low') {
+                    str += `<div class="list">${item.message}</div>`
+                }
+            })
+            $('#container').html(str)
+            addClass($('.list'))
+        } else {
+            $.each(arr, (index, item) =>{
+                if (item.type === 'senior') {
+                    str += `<div class="list">${item.message}</div>`
+                }
+            })
+            $('#container').html(str)
+            addClass($('.list'))
+        }
+    }
+    // 循环绑定选项的class
+    function addClass(list) {
+        $.each(list, function (index, item) {
+            $(item).click(function () {
+                if ($(this).hasClass('selectOn')) {
+                    optionsList = optionsList.filter((item) => {
+                        return item !== $(this).html()
+                    })
+                    $(this).removeClass('selectOn')
+                } else {
+                    optionsList.push($(this).html())
+                    $(this).addClass('selectOn')
+                }
+            })
+        })
+    }
+
+    // 提交按钮
+    $('#button').on('click', function () {
+        if (optionsList.length) {
+            if ($.getUrlParam('uuid') && $.getUrlParam('token')) {
+                $.ajax({
+                    type: 'patch',
+                    url: 'http://dev.scirichon.com:3005/api/orders/' + $.getUrlParam('uuid'),
+                    headers: {
+                        token: $.getUrlParam('token')
+                    },
+                    data: {
+                        data: {
+                            category: 'Order',
+                            fields: {
+                                score_data: JSON.stringify({
+                                    mark: +$('#startP').val(),
+                                    counter_mark: optionsList,
+                                    otherInFo: $('#textarea').val()
+                                })
+                            }
+                        }
+                    },
+                    success: function () {
+                        $.DialogByZ.Alert({Title: "提示", Content: "恭喜你，提交成功！",BtnL:"确定"})
+                    },
+                    error: function () {
+                        $.DialogByZ.Alert({Title: "提示", Content: "对不起，失败啦，请重试！",BtnL:"确定"})
+                    }
+                })
+            } else {
+                $.DialogByZ.Alert({Title: "提示", Content: "恭喜你，提交成功！",BtnL:"确定"})
+            }
+        } else {
+            $.DialogByZ.Alert({Title: "提示", Content: "您还没有评价呦！",BtnL:"确定"})
+        }
+    })
+})
+</script>
